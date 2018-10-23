@@ -1,4 +1,58 @@
 # ORB-SLAM2
+---
+### Installation Instructions for ORB_SLAM2
+
+#### Step 1: Install Pangolin for GUI
+```bash
+cd ~
+sudo apt-get install libglew-dev cmake
+git clone https://github.com/stevenlovegrove/Pangolin.git
+cd Pangolin
+mkdir build
+cd build
+cmake ..
+cmake --build .
+sudo make install
+```
+
+#### Step 2: Install OpenCV
+Download **OpenCV 3.4.3** from [here](https://opencv.org/releases.html)
+```bash
+cd ~
+sudo apt-get install build-essential
+sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+sudo apt-get install libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev libeigen3-dev
+sudo apt-get install unzip
+mv Downloads/opencv-3.4.3.zip ~
+unzip opencv-3.4.3.zip
+cd opencv-3.4.3
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=/usr/local  -DINSTALL_C_EXAMPLES=ON -DINSTALL_PYTHON_EXAMPLES=ON -DWITH_IPP=ON -DBUILD_NEW_PYTHON_SUPPORT=ON -DWITH_TBB=ON -DWITH_V4L=ON -DWITH_QT=ON -DWITH_OPENGL=ON -DWITH_OPENCL=ON -DWITH_VTK=ON -DBUILD_TIFF=ON -DWITH_EIGEN=ON  -DPYTHON_EXECUTABLE=$(which python) -DPYTHON_INCLUDE_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") -DPYTHON_PACKAGES_PATH=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")  ..
+make -j8
+sudo make install
+```
+
+#### Step 3: Build ORB-SLAM2
+```bash
+ORB_SLAM2_PATH=/PATH/to/ORB-SLAM2
+cd $ORB_SLAM2_PATH
+git clone https://github.com/taochenshh/ORB_SLAM2.git
+cd ORB_SLAM2
+chmod +x build.sh build_ros.sh run_orb_slam2.sh
+./build.sh
+./build_ros.sh
+echo "export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:${ORB_SLAM2_PATH}/ORB_SLAM2/Examples/ROS" >> ~/.bashrc
+source ~/.bashrc
+```
+
+#### Step 4: Run ORB-SLAM2
+```bash
+./run_orb_slam2.sh
+```
+
+---
+
 **Authors:** [Raul Mur-Artal](http://webdiis.unizar.es/~raulmur/), [Juan D. Tardos](http://webdiis.unizar.es/~jdtardos/), [J. M. M. Montiel](http://webdiis.unizar.es/~josemari/) and [Dorian Galvez-Lopez](http://doriangalvez.com/) ([DBoW2](https://github.com/dorian3d/DBoW2))
 
 **13 Jan 2017**: OpenCV 3 and Eigen 3.3 are now supported.
