@@ -9,6 +9,7 @@ Examples/ROS/ORB_SLAM2/MonoAR
 Examples/ROS/ORB_SLAM2/RGBD
 Examples/ROS/ORB_SLAM2/Stereo
 Examples/ROS/ORB_SLAM2/build/
+Examples/ROS/ORB_SLAM2/Realsense
 Examples/Stereo/stereo_euroc
 Examples/Stereo/stereo_kitti
 KeyFrameTrajectory.txt
@@ -24,3 +25,4 @@ lib/
 .idea/
 cmake-build-debug/
 Thirdparty/Pangolin/
+*.txt
