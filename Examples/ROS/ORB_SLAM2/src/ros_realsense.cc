@@ -19,31 +19,37 @@
 */
 
 
-#include<iostream>
-#include<algorithm>
-#include<fstream>
-#include<chrono>
+#include <iostream>
+#include <algorithm>
+#include <fstream>
+#include <chrono>
 
-#include<ros/ros.h>
+#include <ros/ros.h>
 #include <cv_bridge/cv_bridge.h>
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
+#include <opencv2/core/core.hpp>
 #include <message_filters/sync_policies/approximate_time.h>
-
-#include<opencv2/core/core.hpp>
-
-#include"../../../include/System.h"
+#include "geometry_msgs/PoseStamped.h"
+#include "Converter.h"
+#include "System.h"
 
 using namespace std;
 
 class ImageGrabber
 {
 public:
-    ImageGrabber(ORB_SLAM2::System* pSLAM):mpSLAM(pSLAM){}
+    ImageGrabber(ORB_SLAM2::System* pSLAM):mpSLAM(pSLAM)
+    {
+      mPosePub = mn.advertise<geometry_msgs::PoseStamped>("slam/camera_pose", 10);
+    }
 
     void GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB,const sensor_msgs::ImageConstPtr& msgD);
+    void PublishPose(cv::Mat Tcw);
 
     ORB_SLAM2::System* mpSLAM;
+    ros::NodeHandle mn;
+    ros::Publisher mPosePub;
 };
 
 int main(int argc, char **argv)
@@ -109,7 +115,27 @@ void ImageGrabber::GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB,const senso
         return;
     }
 
-    mpSLAM->TrackRGBD(cv_ptrRGB->image,cv_ptrD->image,cv_ptrRGB->header.stamp.toSec());
+    cv::Mat Tcw = mpSLAM->TrackRGBD(cv_ptrRGB->image,cv_ptrD->image,cv_ptrRGB->header.stamp.toSec());
+
 }
 
-
+void ImageGrabber::PublishPose(cv::Mat Tcw)
+{
+    geometry_msgs::PoseStamped poseMSG;
+    if (!Tcw.empty())
+    {
+        cv::Mat Rwc = Tcw.rowRange(0, 3).colRange(0, 3).t();
+        cv::Mat twc = -Rwc * Tcw.rowRange(0, 3).col(3);
+        vector<float> q = ORB_SLAM2::Converter::toQuaternion(Rwc);
+        poseMSG.pose.position.x = twc.at<float>(0);
+        poseMSG.pose.position.y = twc.at<float>(1);
+        poseMSG.pose.position.z = twc.at<float>(2);
+        poseMSG.pose.orientation.x = q[0];
+        poseMSG.pose.orientation.y = q[1];
+        poseMSG.pose.orientation.z = q[2];
+        poseMSG.pose.orientation.w = q[3];
+        poseMSG.header.frame_id = "slam_camera_color_frame";
+        poseMSG.header.stamp = ros::Time::now();
+        mPosPub.publish(poseMSG);
+    }
+}

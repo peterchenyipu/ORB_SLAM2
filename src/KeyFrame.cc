@@ -21,9 +21,8 @@
 #include "KeyFrame.h"
 #include "Converter.h"
 #include "ORBmatcher.h"
-#include<stdio.h>
+#include <stdio.h>
 #include <mutex>
-#include <opencv2/opencv.hpp>
 
 namespace ORB_SLAM2
 {
