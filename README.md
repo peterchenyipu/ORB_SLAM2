@@ -33,6 +33,7 @@ make -j8
 sudo make install
 ```
 
+
 #### Step 3: Build ORB-SLAM2
 ```bash
 ORB_SLAM2_PATH=/PATH/to/ORB-SLAM2
@@ -48,6 +49,7 @@ source ~/.bashrc
 
 #### Step 4: Run ORB-SLAM2
 ```bash
+roslaunch realsense2_camera rs_rgbd.launch
 ./run_orb_slam2.sh
 ```
 

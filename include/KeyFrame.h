@@ -28,9 +28,8 @@
 #include "ORBextractor.h"
 #include "Frame.h"
 #include "KeyFrameDatabase.h"
-
 #include <mutex>
-
+#include <opencv2/core/core.hpp>
 
 namespace ORB_SLAM2
 {
@@ -44,6 +43,7 @@ class KeyFrame
 {
 public:
     KeyFrame(Frame &F, Map* pMap, KeyFrameDatabase* pKFDB);
+    KeyFrame(Frame &F, cv::Mat imRGB, cv::Mat imDepth, Map* pMap, KeyFrameDatabase* pKFDB);
 
     // Pose functions
     void SetPose(const cv::Mat &Tcw);
@@ -108,6 +108,9 @@ public:
     // Compute Scene Depth (q=2 median). Used in monocular.
     float ComputeSceneMedianDepth(const int q);
 
+    void DeleteSavedImages();
+
+
     static bool weightComp( int a, int b){
         return a>b;
     }
@@ -121,6 +124,10 @@ public:
 public:
 
     static long unsigned int nNextId;
+    static std::string sDepthRootPath;
+    static std::string sRGBRootPath;
+    std::string msDepthPath;
+    std::string msRGBPath;
     long unsigned int mnId;
     const long unsigned int mnFrameId;
 

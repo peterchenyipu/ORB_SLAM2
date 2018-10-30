@@ -34,7 +34,7 @@
 #include"PnPsolver.h"
 
 #include<iostream>
-
+#include<boost/filesystem.hpp>
 #include<mutex>
 
 
@@ -46,7 +46,8 @@ namespace ORB_SLAM2
 Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer, Map *pMap, KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor):
     mState(NO_IMAGES_YET), mSensor(sensor), mbOnlyTracking(false), mbVO(false), mpORBVocabulary(pVoc),
     mpKeyFrameDB(pKFDB), mpInitializer(static_cast<Initializer*>(NULL)), mpSystem(pSys), mpViewer(NULL),
-    mpFrameDrawer(pFrameDrawer), mpMapDrawer(pMapDrawer), mpMap(pMap), mnLastRelocFrameId(0)
+    mpFrameDrawer(pFrameDrawer), mpMapDrawer(pMapDrawer), mpMap(pMap), mnLastRelocFrameId(0),
+    msDepthImgSavePath(std::string()), msRGBImgSavePath(std::string())
 {
     // Load camera parameters from settings file
 
@@ -144,8 +145,23 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
             mDepthMapFactor=1;
         else
             mDepthMapFactor = 1.0f/mDepthMapFactor;
+        if (!fSettings["DepthImgSavePath"].empty())
+        {
+            msDepthImgSavePath = static_cast<std::string> (fSettings["DepthImgSavePath"]);
+            boost::filesystem::path DepthPath{(msDepthImgSavePath.c_str())};
+            boost::filesystem::remove_all(DepthPath);
+            boost::filesystem::create_directories(DepthPath);
+            KeyFrame::sDepthRootPath = boost::filesystem::canonical(DepthPath).string();
+        }
+        if (!fSettings["RGBImgSavePath"].empty())
+        {
+            msRGBImgSavePath = static_cast<std::string> (fSettings["RGBImgSavePath"]);
+            boost::filesystem::path RGBPath{(msRGBImgSavePath.c_str())};
+            boost::filesystem::remove_all(RGBPath);
+            boost::filesystem::create_directories(RGBPath);
+            KeyFrame::sRGBRootPath = boost::filesystem::canonical(RGBPath).string();
+        }
     }
-
 }
 
 void Tracking::SetLocalMapper(LocalMapping *pLocalMapper)
@@ -206,6 +222,8 @@ cv::Mat Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRe
 
 cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, const double &timestamp)
 {
+    mImColor = imRGB.clone();
+    mImDepth = imD.clone();
     mImGray = imRGB;
     cv::Mat imDepth = imD;
 
@@ -916,7 +934,7 @@ bool Tracking::TrackWithMotionModel()
             else if(mCurrentFrame.mvpMapPoints[i]->Observations()>0)
                 nmatchesMap++;
         }
-    }    
+    }
 
     if(mbOnlyTracking)
     {
@@ -1064,8 +1082,16 @@ void Tracking::CreateNewKeyFrame()
 {
     if(!mpLocalMapper->SetNotStop(true))
         return;
+    KeyFrame* pKF;
+    if(msRGBImgSavePath.empty() || msDepthImgSavePath.empty())
+    {
+        pKF = new KeyFrame(mCurrentFrame,mpMap,mpKeyFrameDB);
+    }
+    else
+    {
+        pKF = new KeyFrame(mCurrentFrame, mImColor, mImDepth, mpMap,mpKeyFrameDB);
+    }
 
-    KeyFrame* pKF = new KeyFrame(mCurrentFrame,mpMap,mpKeyFrameDB);
 
     mpReferenceKF = pKF;
     mCurrentFrame.mpReferenceKF = pKF;
@@ -1532,6 +1558,7 @@ void Tracking::Reset()
 
     KeyFrame::nNextId = 0;
     Frame::nNextId = 0;
+
     mState = NO_IMAGES_YET;
 
     if(mpInitializer)

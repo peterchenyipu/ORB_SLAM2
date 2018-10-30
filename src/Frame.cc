@@ -23,6 +23,7 @@
 #include "ORBmatcher.h"
 #include <thread>
 
+
 namespace ORB_SLAM2
 {
 
@@ -168,6 +169,7 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeSt
     mb = mbf/fx;
 
     AssignFeaturesToGrid();
+
 }
 
 

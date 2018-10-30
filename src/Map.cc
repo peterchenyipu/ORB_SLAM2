@@ -55,6 +55,7 @@ void Map::EraseMapPoint(MapPoint *pMP)
 void Map::EraseKeyFrame(KeyFrame *pKF)
 {
     unique_lock<mutex> lock(mMutexMap);
+    pKF->DeleteSavedImages();
     mspKeyFrames.erase(pKF);
 
     // TODO: This only erase the pointer.

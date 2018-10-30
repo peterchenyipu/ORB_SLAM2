@@ -95,6 +95,10 @@ public:
     // Current Frame
     Frame mCurrentFrame;
     cv::Mat mImGray;
+    cv::Mat mImColor;
+    cv::Mat mImDepth;
+    std::string msDepthImgSavePath;
+    std::string msRGBImgSavePath;
 
     // Initialization Variables (Monocular)
     std::vector<int> mvIniLastMatches;
