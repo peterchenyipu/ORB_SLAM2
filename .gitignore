@@ -27,3 +27,5 @@ cmake-build-debug/
 Thirdparty/Pangolin/
 *.txt
 *.png
+**/msg_gen/**
+Examples/ROS/ORB_SLAM2/src/ORB_SLAM2
