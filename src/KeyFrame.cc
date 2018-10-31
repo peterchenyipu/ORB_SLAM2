@@ -23,7 +23,6 @@
 #include "ORBmatcher.h"
 #include <stdio.h>
 #include <mutex>
-
 namespace ORB_SLAM2
 {
 

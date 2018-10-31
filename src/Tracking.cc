@@ -152,6 +152,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
             boost::filesystem::remove_all(DepthPath);
             boost::filesystem::create_directories(DepthPath);
             KeyFrame::sDepthRootPath = boost::filesystem::canonical(DepthPath).string();
+            cout<< "Depth images will be saved to:" << KeyFrame::sDepthRootPath << endl;
         }
         if (!fSettings["RGBImgSavePath"].empty())
         {
@@ -160,6 +161,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
             boost::filesystem::remove_all(RGBPath);
             boost::filesystem::create_directories(RGBPath);
             KeyFrame::sRGBRootPath = boost::filesystem::canonical(RGBPath).string();
+            cout<< "RGB images will be saved to:" << KeyFrame::sRGBRootPath << endl;
         }
     }
 }
