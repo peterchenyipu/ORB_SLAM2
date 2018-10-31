@@ -41,27 +41,23 @@ using namespace std;
 class ImageGrabber
 {
  public:
-    ImageGrabber(ORB_SLAM2::System* pSLAM):mpSLAM(pSLAM)
+    ImageGrabber(ORB_SLAM2::System* pSLAM, ros::NodeHandle& n): mpSLAM(pSLAM), mn(n)
     {
-      mPosePub = mn.advertise<geometry_msgs::PoseStamped>("slam/camera_pose", 10);
-      mTrajPub = mn.advertise<geometry_msgs::PoseArray>("slam/camera_traj", 10);
+        mPosePub = mn.advertise<geometry_msgs::PoseStamped>("slam/camera_pose", 10);
     }
 
     void GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB,const sensor_msgs::ImageConstPtr& msgD);
     void PublishPose(cv::Mat Tcw);
-
     ORB_SLAM2::System* mpSLAM;
     ros::NodeHandle mn;
     ros::Publisher mPosePub;
-    ros::Publisher mTrajPub;
 };
-
 
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "RGBD");
     ros::start();
-
+    ros::NodeHandle nh;
     if(argc != 3)
     {
         cerr << endl << "Usage: rosrun ORB_SLAM2 RGBD path_to_vocabulary path_to_settings" << endl;        
@@ -72,9 +68,7 @@ int main(int argc, char **argv)
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::RGBD,true);
 
-    ImageGrabber igb(&SLAM);
-
-    ros::NodeHandle nh;
+    ImageGrabber igb(&SLAM, nh);
 
     message_filters::Subscriber<sensor_msgs::Image> rgb_sub(nh, "/camera/color/image_raw", 1);
     message_filters::Subscriber<sensor_msgs::Image> depth_sub(nh, "/camera/aligned_depth_to_color/image_raw", 1);
@@ -121,7 +115,7 @@ void ImageGrabber::GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB,const senso
     }
 
     cv::Mat Tcw = mpSLAM->TrackRGBD(cv_ptrRGB->image,cv_ptrD->image,cv_ptrRGB->header.stamp.toSec());
-
+    PublishPose(Tcw);
 }
 
 void ImageGrabber::PublishPose(cv::Mat Tcw)
