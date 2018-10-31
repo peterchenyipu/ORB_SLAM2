@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.4.6)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
 rosbuild_init()
-
 IF (NOT ROS_BUILD_TYPE)
     SET(ROS_BUILD_TYPE Release)
 ENDIF ()
@@ -57,6 +56,8 @@ set(LIBS
         ${PROJECT_SOURCE_DIR}/../../../lib/libORB_SLAM2.so
         -lboost_system
         )
+
+rosbuild_genmsg()
 
 # Node for monocular camera
 rosbuild_add_executable(Mono

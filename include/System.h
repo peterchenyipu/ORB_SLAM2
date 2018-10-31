@@ -25,7 +25,7 @@
 #include<string>
 #include<thread>
 #include<opencv2/core/core.hpp>
-
+#include<tuple>
 #include "Tracking.h"
 #include "FrameDrawer.h"
 #include "MapDrawer.h"
@@ -35,6 +35,7 @@
 #include "KeyFrameDatabase.h"
 #include "ORBVocabulary.h"
 #include "Viewer.h"
+
 
 namespace ORB_SLAM2
 {
@@ -93,6 +94,9 @@ public:
     // It waits until all threads have finished.
     // This function must be called before saving the trajectory.
     void Shutdown();
+
+    // Get keyframe trajectory till now
+    std::tuple<vector<int>, vector<vector<float> >, vector<vector<float> > >  GetKeyFrameTrajectory();
 
     // Save camera trajectory in the TUM RGB-D dataset format.
     // Only for stereo and RGB-D. This method does not work for monocular.

@@ -328,6 +328,40 @@ void System::Shutdown()
         pangolin::BindToContext("ORB-SLAM2: Map Viewer");
 }
 
+std::tuple<vector<int>, vector<vector<float> >, vector<vector<float> > >  System::GetKeyFrameTrajectory()
+{
+    vector<int> vnKFids;
+    vector<vector<float> > vvfKFpos;
+    vector<vector<float> > vvfKFquat;
+
+    vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
+    sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
+
+    // Transform all keyframes so that the first keyframe is at the origin.
+    // After a loop closure the first keyframe might not be at the origin.
+    cv::Mat Two = vpKFs[0]->GetPoseInverse();
+
+    for(size_t i=0; i<vpKFs.size(); i++)
+    {
+        KeyFrame* pKF = vpKFs[i];
+
+        pKF->SetPose(pKF->GetPose()*Two);
+
+        if(pKF->isBad())
+            continue;
+
+        cv::Mat R = pKF->GetRotation().t();
+        vector<float> q = Converter::toQuaternion(R);
+        cv::Mat t = pKF->GetCameraCenter();
+        vnKFids.push_back(pKF->mnId);
+        vector<float> vfKFpos{t.at<float>(0), t.at<float>(1), t.at<float>(2)};
+        vvfKFpos.push_back(vfKFpos);
+        vvfKFquat.push_back(q);
+    }
+    auto traj = std::make_tuple(vnKFids, vvfKFpos, vvfKFquat);
+    return traj;
+}
+
 void System::SaveTrajectoryTUM(const string &filename)
 {
     cout << endl << "Saving camera trajectory to " << filename << " ..." << endl;

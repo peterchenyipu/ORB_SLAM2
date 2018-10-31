@@ -31,6 +31,8 @@
 #include <opencv2/core/core.hpp>
 #include <message_filters/sync_policies/approximate_time.h>
 #include "geometry_msgs/PoseStamped.h"
+#include "geometry_msgs/Pose.h"
+#include "geometry_msgs/PoseArray.h"
 #include "Converter.h"
 #include "System.h"
 
@@ -38,10 +40,11 @@ using namespace std;
 
 class ImageGrabber
 {
-public:
+ public:
     ImageGrabber(ORB_SLAM2::System* pSLAM):mpSLAM(pSLAM)
     {
       mPosePub = mn.advertise<geometry_msgs::PoseStamped>("slam/camera_pose", 10);
+      mTrajPub = mn.advertise<geometry_msgs::PoseArray>("slam/camera_traj", 10);
     }
 
     void GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB,const sensor_msgs::ImageConstPtr& msgD);
@@ -50,7 +53,9 @@ public:
     ORB_SLAM2::System* mpSLAM;
     ros::NodeHandle mn;
     ros::Publisher mPosePub;
+    ros::Publisher mTrajPub;
 };
+
 
 int main(int argc, char **argv)
 {
@@ -136,6 +141,6 @@ void ImageGrabber::PublishPose(cv::Mat Tcw)
         poseMSG.pose.orientation.w = q[3];
         poseMSG.header.frame_id = "slam_camera_color_frame";
         poseMSG.header.stamp = ros::Time::now();
-        mPosPub.publish(poseMSG);
+        mPosePub.publish(poseMSG);
     }
 }
