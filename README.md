@@ -1,7 +1,12 @@
 # ORB-SLAM2
 ---
 ### Installation Instructions for ORB_SLAM2
-
+If you don't wanna go over all the details, you can simply run:
+```bash
+chmod +x install.sh
+sudo ./install.sh
+```
+And then you can skip the following steps.
 #### Step 1: Install Pangolin for GUI
 ```bash
 cd ~
@@ -46,7 +51,7 @@ echo "export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:${ORB_SLAM2_PATH}/ORB_SLAM2/Ex
 source ~/.bashrc
 ```
 
-#### Step 4: Run ORB-SLAM2
+### Run ORB-SLAM2
 ```bash
 roslaunch realsense2_camera rs_rgbd.launch
 ./run_orb_slam2.sh
