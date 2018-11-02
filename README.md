@@ -16,14 +16,13 @@ sudo make install
 ```
 
 #### Step 2: Install OpenCV
-Download **OpenCV 3.4.3** from [here](https://opencv.org/releases.html)
 ```bash
 cd ~
 sudo apt-get install build-essential
 sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
 sudo apt-get install libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev libeigen3-dev
 sudo apt-get install unzip
-mv Downloads/opencv-3.4.3.zip ~
+wget https://github.com/opencv/opencv/archive/3.4.3.zip -O opencv-3.4.3.zip
 unzip opencv-3.4.3.zip
 cd opencv-3.4.3
 mkdir build
