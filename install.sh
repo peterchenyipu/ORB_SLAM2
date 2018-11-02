@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # Install Pangolin
+ORB_SLAM2_PATH=$(pwd)
 cd ~
 sudo apt-get install libglew-dev cmake -y
 git clone https://github.com/stevenlovegrove/Pangolin.git
@@ -27,12 +28,9 @@ make -j8
 sudo make install
 
 # Compile ORB_SLAM2
-ORB_SLAM2_PATH=${HOME}
 cd $ORB_SLAM2_PATH
-git clone https://github.com/taochenshh/ORB_SLAM2.git
-cd ORB_SLAM2
 chmod +x build.sh build_ros.sh run_orb_slam2.sh
 ./build.sh
 ./build_ros.sh
-echo "export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:${ORB_SLAM2_PATH}/ORB_SLAM2/Examples/ROS" >> ~/.bashrc
+echo "export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:${ORB_SLAM2_PATH}/Examples/ROS" >> ~/.bashrc
 source ~/.bashrc
