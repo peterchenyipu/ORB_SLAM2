@@ -4,7 +4,7 @@
 If you don't wanna go over all the details, you can simply run:
 ```bash
 chmod +x install.sh
-sudo ./install.sh
+sudo bash -i install.sh
 ```
 And then you can skip the following steps.
 #### Step 1: Install Pangolin for GUI
