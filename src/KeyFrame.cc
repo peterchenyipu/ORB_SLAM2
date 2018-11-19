@@ -95,7 +95,7 @@ KeyFrame::KeyFrame(Frame &F, cv::Mat imRGB, cv::Mat imDepth, Map *pMap, KeyFrame
     std::stringstream RGBSS;
     RGBSS << sRGBRootPath << "/KeyFrame-" << std::setw(8) << std::setfill('0') << mnId << ".png";
     msRGBPath = RGBSS.str();
-    cv::cvtColor(imRGB, imRGB, cv::COLOR_RGB2BGR);
+//    cv::cvtColor(imRGB, imRGB, cv::COLOR_RGB2BGR);
     cv::imwrite(msRGBPath.c_str(), imRGB);
 }
 
