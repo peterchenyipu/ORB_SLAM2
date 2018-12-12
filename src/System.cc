@@ -335,12 +335,14 @@ std::tuple<vector<int>, vector<vector<float> >, vector<vector<float> > >  System
     vector<vector<float> > vvfKFquat;
 
     vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
+    if (vpKFs.size() <= 0)
+    {
+      return std::tuple<vector<int>, vector<vector<float> >, vector<vector<float> > >();
+    }
     sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
-
     // Transform all keyframes so that the first keyframe is at the origin.
     // After a loop closure the first keyframe might not be at the origin.
     cv::Mat Two = vpKFs[0]->GetPoseInverse();
-
     for(size_t i=0; i<vpKFs.size(); i++)
     {
         KeyFrame* pKF = vpKFs[i];
