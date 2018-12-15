@@ -333,7 +333,10 @@ std::tuple<vector<int>, vector<vector<float> >, vector<vector<float> > >  System
     vector<int> vnKFids;
     vector<vector<float> > vvfKFpos;
     vector<vector<float> > vvfKFquat;
-
+    if (mpLoopCloser->isRunningGBA())
+    {
+      return std::tuple<vector<int>, vector<vector<float> >, vector<vector<float> > >();
+    }
     vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
     if (vpKFs.size() <= 0)
     {
