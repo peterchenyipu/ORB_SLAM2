@@ -333,10 +333,6 @@ std::tuple<vector<int>, vector<vector<float> >, vector<vector<float> > >  System
     vector<int> vnKFids;
     vector<vector<float> > vvfKFpos;
     vector<vector<float> > vvfKFquat;
-    if (mpLoopCloser->isRunningGBA())
-    {
-      return std::tuple<vector<int>, vector<vector<float> >, vector<vector<float> > >();
-    }
     vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
     if (vpKFs.size() <= 0)
     {
@@ -346,22 +342,39 @@ std::tuple<vector<int>, vector<vector<float> >, vector<vector<float> > >  System
     // Transform all keyframes so that the first keyframe is at the origin.
     // After a loop closure the first keyframe might not be at the origin.
     cv::Mat Two = vpKFs[0]->GetPoseInverse();
+//    for(size_t i=0; i<vpKFs.size(); i++)
+//    {
+//        KeyFrame* pKF = vpKFs[i];
+//
+//        pKF->SetPose(pKF->GetPose()*Two);
+//
+//        if(pKF->isBad())
+//            continue;
+//
+//        cv::Mat R = pKF->GetRotation().t();
+//        vector<float> q = Converter::toQuaternion(R);
+//        cv::Mat t = pKF->GetCameraCenter();
+//        vnKFids.push_back(pKF->mnId);
+//        vector<float> vfKFpos{t.at<float>(0), t.at<float>(1), t.at<float>(2)};
+//        vvfKFpos.push_back(vfKFpos);
+//        vvfKFquat.push_back(q);
+//    }
     for(size_t i=0; i<vpKFs.size(); i++)
     {
-        KeyFrame* pKF = vpKFs[i];
+      KeyFrame* pKF = vpKFs[i];
+      cv::Mat Tcw = pKF->GetPose() * Two;
 
-        pKF->SetPose(pKF->GetPose()*Two);
-
-        if(pKF->isBad())
-            continue;
-
-        cv::Mat R = pKF->GetRotation().t();
-        vector<float> q = Converter::toQuaternion(R);
-        cv::Mat t = pKF->GetCameraCenter();
-        vnKFids.push_back(pKF->mnId);
-        vector<float> vfKFpos{t.at<float>(0), t.at<float>(1), t.at<float>(2)};
-        vvfKFpos.push_back(vfKFpos);
-        vvfKFquat.push_back(q);
+      if(pKF->isBad())
+        continue;
+      cv::Mat Rcw = Tcw.rowRange(0,3).colRange(0,3).clone();
+      cv::Mat tcw = Tcw.rowRange(0,3).col(3).clone();
+      cv::Mat Rwc = Rcw.t();
+      vector<float> q = Converter::toQuaternion(Rwc);
+      cv::Mat Ow = -Rwc*tcw;
+      vnKFids.push_back(pKF->mnId);
+      vector<float> vfKFpos{Ow.at<float>(0), Ow.at<float>(1), Ow.at<float>(2)};
+      vvfKFpos.push_back(vfKFpos);
+      vvfKFquat.push_back(q);
     }
     auto traj = std::make_tuple(vnKFids, vvfKFpos, vvfKFquat);
     return traj;
