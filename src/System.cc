@@ -59,7 +59,8 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     cv::FileStorage fsSettings(strSettingsFile.c_str(), cv::FileStorage::READ);
     if(!fsSettings.isOpened())
     {
-       cerr << "Failed to open settings file at: " << strSettingsFile << endl;
+       cerr << "\033[1;31mFailed to open settings file at: \033[0m"
+        << "\033[33m"<< strSettingsFile << "\033[0m" << endl;
        exit(-1);
     }
 
