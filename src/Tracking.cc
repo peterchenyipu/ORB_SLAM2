@@ -534,7 +534,16 @@ void Tracking::StereoInitialization()
         mCurrentFrame.SetPose(cv::Mat::eye(4,4,CV_32F));
 
         // Create KeyFrame
-        KeyFrame* pKFini = new KeyFrame(mCurrentFrame,mpMap,mpKeyFrameDB);
+        KeyFrame* pKFini;
+
+        if(msRGBImgSavePath.empty() || msDepthImgSavePath.empty())
+        {
+            pKFini = new KeyFrame(mCurrentFrame,mpMap,mpKeyFrameDB);
+        }
+        else
+        {
+            pKFini = new KeyFrame(mCurrentFrame, mImColor, mImDepth, mpMap,mpKeyFrameDB);
+        }
 
         // Insert KeyFrame in the map
         mpMap->AddKeyFrame(pKFini);
